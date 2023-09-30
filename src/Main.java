@@ -203,7 +203,7 @@ class BakeryManagementApp extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 // Load and draw the background image
-                ImageIcon backgroundImage = new ImageIcon("C:\\Users\\Pramuditha\\OneDrive\\Desktop\\New project\\bakery-background-with-colorful-bread-illustration-free-vector.jpg");
+                ImageIcon backgroundImage = new ImageIcon("C:\\Users\\Pramuditha\\OneDrive\\Desktop\\New project\\anuga_2023_bread_bakery.png");
                 g.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
 
                 // Apply transparency for a fade-in effect
@@ -223,7 +223,7 @@ class BakeryManagementApp extends JFrame {
         gbc.insets = new Insets(5, 5, 5, 5); // Add spacing between components
 
         // Create and position the components on the login panel
-        JLabel nameLabel = new JLabel("Oven & Whisk Creations");
+        JLabel nameLabel = new JLabel("ANUGA BREAD & BAKERY");
         nameLabel.setFont(new Font("Arial", Font.BOLD, 24));
         gbc.gridwidth = 2; // Span 2 columns
         gbc.gridx = 0;

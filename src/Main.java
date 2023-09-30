@@ -14,6 +14,14 @@ import javax.swing.Timer.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 class Product {
     private String name;
@@ -611,6 +619,81 @@ class BakeryManagementApp extends JFrame {
         slideshowTimer.setDelay(4000); // Delay in milliseconds
         slideshowTimer.setInitialDelay(0); // Start immediately
         slideshowTimer.start();
+
+        // Create an "About Us" button
+        JButton aboutUsButton = new JButton("About Us");
+        aboutUsButton.setFont(new Font("Arial", Font.PLAIN, 16));
+        aboutUsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "AboutUsPanel"); // Switch to the About Us panel
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false); // Make the button panel transparent
+        buttonPanel.add(aboutUsButton);
+        bannerPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        mainPanel.add(bannerPanel, "BannerPanel");
+
+        // Create an "About Us" panel
+        JPanel aboutUsPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    BufferedImage backgroundImage = ImageIO.read(new File("C:\\Users\\Pramuditha\\OneDrive\\Desktop\\New project\\aboutusbackground.jpg"));
+                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        aboutUsPanel.setLayout(new BorderLayout());
+
+        // Create a label with black text for the "About Us" content
+        JLabel aboutUsTextLabel = new JLabel("<html><body><div style='text-align: center; color: black; font-size: 14px;'>"
+                + "Welcome to ANUGA BREAD & BAKERY!<br><br>"
+                + "We take pride in creating delicious pastries and baked goods "
+                + "with the finest ingredients. Our bakery is located in the heart of Europe, "
+                + "where we have been serving our customers for decades. "
+                + "We are committed to delivering quality and taste in every bite. "
+                + "Visit us today and experience the joy of our delectable treats!<br><br>"
+                + "Here's what sets us apart:<br>"
+                + "<ul>"
+                + "<li>Handcrafted with love and care</li>"
+                + "<li>Wide variety of freshly baked bread</li>"
+                + "<li>Specialty cakes for every occasion</li>"
+                + "<li>Seasonal and local ingredients</li>"
+                + "</ul>"
+                + "</div></body></html>");
+
+
+        aboutUsTextLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
+        aboutUsPanel.add(aboutUsTextLabel, BorderLayout.CENTER);
+
+        // Create a back button with custom styling
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Arial", Font.BOLD, 18)); // Bold text
+        backButton.setForeground(Color.black); // Set text color to white
+        backButton.setBackground(Color.white); // Set the background color to black
+        backButton.setBorder(BorderFactory.createLineBorder(Color.black, 2)); // Add a slightly larger rectangular border
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(mainPanel, "BannerPanel"); // Switch back to the banner panel
+            }
+        });
+
+        // Create a panel to contain the back button and position it in the top-left corner
+        JPanel backButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        backButtonPanel.setOpaque(false); // Make the panel transparent
+        backButtonPanel.add(backButton);
+        aboutUsPanel.add(backButtonPanel, BorderLayout.NORTH);
+
+        mainPanel.add(aboutUsPanel, "AboutUsPanel");
     }
 
     private JPanel createCheckoutPanel() {

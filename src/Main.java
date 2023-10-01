@@ -462,50 +462,50 @@ class BakeryManagementApp extends JFrame {
         checkoutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (!cart.getItems().isEmpty()) {
-                    // Extract the total amount from the total label
-                    String totalLabelText = totalLabel.getText();
-                    String totalAmountString = totalLabelText.replace("Total: $", "");
-                    double totalAmount = Double.parseDouble(totalAmountString);
-
                     String username = loggedInUsername; // Use the currently logged-in username
 
                     try {
+                        StringBuilder productsWithQuantities = new StringBuilder();
+
                         for (ShoppingCartItem item : cart.getItems()) {
                             String productName = item.getProduct().getName();
-                            double price = item.getProduct().getPrice();
                             int quantity = item.getQuantity();
-                            double totalPrice = item.getTotalPrice();
 
-                            // Check if the product already exists in the database for this user
-                            PreparedStatement checkStatement = connection.prepareStatement(
-                                    "SELECT * FROM product WHERE username = ? AND product = ?"
-                            );
-                            checkStatement.setString(1, username);
-                            checkStatement.setString(2, productName);
-                            if (checkStatement.executeQuery().next()) {
-                                // Update the existing entry
-                                PreparedStatement updateStatement = connection.prepareStatement(
-                                        "UPDATE product SET price = ?, quantity = ?, total = ? WHERE username = ? AND product= ?"
-                                );
-                                updateStatement.setDouble(1, price);
-                                updateStatement.setInt(2, quantity);
-                                updateStatement.setDouble(3, totalAmount); // Use the extracted total amount
-                                updateStatement.setString(4, username);
-                                updateStatement.setString(5, productName);
-                                updateStatement.executeUpdate();
-                            } else {
-                                // Insert a new entry
-                                PreparedStatement insertStatement = connection.prepareStatement(
-                                        "INSERT INTO product (username, product, price, quantity, total) VALUES (?, ?, ?, ?, ?)"
-                                );
-                                insertStatement.setString(1, username);
-                                insertStatement.setString(2, productName);
-                                insertStatement.setDouble(3, price);
-                                insertStatement.setInt(4, quantity);
-                                insertStatement.setDouble(5, totalAmount); // Use the extracted total amount
-                                insertStatement.executeUpdate();
+                            // Concatenate the product name and quantity as a string
+                            String productWithQuantity = productName + " * " + quantity;
+
+                            // Append the productWithQuantity to the productsWithQuantities StringBuilder
+                            if (productsWithQuantities.length() > 0) {
+                                productsWithQuantities.append(", ");
                             }
+                            productsWithQuantities.append(productWithQuantity);
                         }
+
+                        double totalAmount = cart.getItems().stream().mapToDouble(ShoppingCartItem::getTotalPrice).sum();
+
+                        // Insert a single entry in the database with all products and quantities
+                        PreparedStatement insertStatement = connection.prepareStatement(
+                                "INSERT INTO product (username, product, total) VALUES (?, ?, ?)"
+                        );
+                        insertStatement.setString(1, username);
+                        insertStatement.setString(2, productsWithQuantities.toString()); // Use the concatenated string
+                        insertStatement.setDouble(3, totalAmount);
+                        insertStatement.executeUpdate();
+
+                        // Query the database to get the total quantity and total price
+                        String query = "SELECT SUM(quantity) AS total_quantity, SUM(total) AS total_price FROM product WHERE username = ?";
+                        PreparedStatement queryStatement = connection.prepareStatement(query);
+                        queryStatement.setString(1, username);
+                        ResultSet resultSet = queryStatement.executeQuery();
+
+                        if (resultSet.next()) {
+                            int totalQuantity = resultSet.getInt("total_quantity");
+                            double totalPrice = resultSet.getDouble("total_price");
+
+                            System.out.println("Total Quantity: " + totalQuantity);
+                            System.out.println("Total Price: $" + totalPrice);
+                        }
+
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                         // Handle SQL error

@@ -152,6 +152,7 @@ class BakeryManagementApp extends JFrame {
     private JButton checkoutButton;
     private User currentUser;
     private Cart cart = new Cart();
+    private String loggedInUsername;
 
     private JPanel loginPanel;
     private JPanel mainPanel;
@@ -309,15 +310,16 @@ class BakeryManagementApp extends JFrame {
                     JOptionPane.showMessageDialog(BakeryManagementApp.this, "Please enter both username and password.");
                     return;
                 }
-
                 User user = UserDatabase.getUserByUsername(username);
 
                 if (user != null && user.getPassword().equals(password)) {
                     currentUser = user;
+                    loggedInUsername = username; // Set loggedInUsername when the user logs in successfully
                     cardLayout.show(mainPanel, "BannerPanel"); // Switch to the banner panel
                 } else {
                     JOptionPane.showMessageDialog(BakeryManagementApp.this, "Invalid username or password.");
                 }
+
                 usernameField.setText("");
                 passwordField.setText("");
             }
@@ -465,7 +467,7 @@ class BakeryManagementApp extends JFrame {
                     String totalAmountString = totalLabelText.replace("Total: $", "");
                     double totalAmount = Double.parseDouble(totalAmountString);
 
-                    String username = "current_user"; // Replace with actual username logic
+                    String username = loggedInUsername; // Use the currently logged-in username
 
                     try {
                         for (ShoppingCartItem item : cart.getItems()) {
@@ -515,9 +517,8 @@ class BakeryManagementApp extends JFrame {
                     JOptionPane.showMessageDialog(BakeryManagementApp.this, "Cart is empty. Add items to the cart first.");
                 }
             }
+        });
 
-
-       });
 
         // Set background and foreground colors for components
         mainContentPanel.setBackground(Color.WHITE);
